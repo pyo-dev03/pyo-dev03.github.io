@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>표정수 | Backend Developer Portfolio</title>
+  <meta name="description" content="여러 기기와 여러 사람이 동시에 건드려도 상태가 어긋나지 않는 서버를 만드는 Spring 백엔드 개발자 표정수의 포트폴리오">
+  <meta property="og:title" content="표정수 | Backend Developer Portfolio">
+  <meta property="og:description" content="상태가 어긋나지 않는 서버를 만드는 Spring 백엔드 개발자">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    (function () {
+      var saved = localStorage.getItem('theme');
+      if (saved) document.documentElement.dataset.theme = saved;
+    })();
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">본문으로 건너뛰기</a>
+
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="logo" href="#top">표정수<span>.dev</span></a>
+      <nav aria-label="주요 메뉴">
+        <a href="#projects">프로젝트</a>
+        <a href="#skills">기술</a>
+        <a href="#contact">연락처</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="다크 모드 전환">◐</button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero wrap" id="top">
+      <p class="eyebrow">Spring Backend Developer · 2027 신입</p>
+      <h1>여러 기기, 여러 사람이 동시에 건드려도<br>상태가 어긋나지 않는 서버를 만듭니다.</h1>
+      <p class="lead">
+        <strong>시계 차이·연결 끊김·동시 수정</strong> 같은 경계 상황을 테스트로 먼저 정의하고 해결합니다.
+        AI 도구로 만든 코드도 문서와 테스트를 기준으로 검증합니다.
+      </p>
+      <div class="hero-links">
+        <a class="btn primary" href="#projects">프로젝트 보기</a>
+        <a class="btn" href="https://github.com/pyo-dev03" target="_blank" rel="noopener">GitHub</a>
+        <a class="btn" href="mailto:pyo.develop@gmail.com">pyo.develop@gmail.com</a>
+      </div>
+
+      <ul class="stats" aria-label="핵심 성과">
+        <li><b>30<small>초</small> → 0.14<small>초</small></b><span>폰 ↔ PC 상태 반영 지연<br>주기 조회를 WebSocket push로 전환</span></li>
+        <li><b>p99 163<small>ms</small></b><span>담당 API 운영 서버 부하 테스트<br>목표 60 RPS 통과</span></li>
+        <li><b>대상</b><span>2026 로커톤<br>NFC 스탬프 투어 백엔드</span></li>
+      </ul>
+    </section>
+
+    <section class="section wrap" id="projects">
+      <h2 class="section-title"><span>01</span>프로젝트</h2>
+
+      <!-- GHOST -->
+      <article class="project" id="ghost">
+        <header class="project-head">
+          <p class="project-meta">2026.09 – 11 · 7인 팀 총괄(PM) · 2026 소프트웨어 페스티벌 출품</p>
+          <h3>GHOST <small>딴짓하는 순간 먼저 찾아오는 집중 동반자</small></h3>
+          <p class="project-summary">
+            폰·PC 어디서 딴짓하든 하나의 세션으로 묶어 판단하고, 화면 위 캐릭터가 단계적으로 개입하는 서비스입니다.
+            <b>기기 간 실시간 동기화 서버</b>를 설계·구현하고, 기획과 팀 운영을 맡았습니다.
+          </p>
+          <ul class="tags">
+            <li>Java 21</li><li>Spring Boot</li><li>WebSocket</li><li>PostgreSQL</li><li>JPA</li><li>Kotlin</li><li>Electron</li>
+          </ul>
+        </header>
+
+        <div class="project-body">
+          <figure class="diagram" aria-label="GHOST 아키텍처">
+            <div class="d-row">
+              <div class="d-box">Android<small>앱 사용 감지 · 개입 상태머신</small></div>
+              <div class="d-box">PC (Electron)<small>활성 창 감지 · 오버레이</small></div>
+            </div>
+            <div class="d-arrows"><span>heartbeat ↓ · ↑ WebSocket push</span></div>
+            <div class="d-box d-main">Spring Boot 서버<small>세션(기준 데이터) · 시간 합산 · 딴짓 판정 · 지표 집계</small></div>
+          </figure>
+
+          <div class="problems">
+            <details open>
+              <summary><span class="badge">동기화</span> 상태 반영 최대 30초 → 중앙값 0.14초</summary>
+              <dl>
+                <dt>문제</dt><dd>각 기기가 30초 주기 heartbeat로만 상태를 읽어, 폰에서 시작된 개입이 PC에 최대 30초 늦게 반영됐습니다.</dd>
+                <dt>해결</dt><dd>서버가 단계 변경을 받는 즉시 같은 세션의 다른 기기로 WebSocket push하도록 바꾸고, 변경·수신·전송 시각을 메시지에 실어 지연을 잴 수 있게 했습니다.</dd>
+                <dt>결과</dt><dd>운영 서버(싱가포르 ↔ 한국) 10회 측정 <b>중앙값 0.135초, 최대 0.32초</b>. 남은 지연은 네트워크 왕복 시간입니다.</dd>
+              </dl>
+            </details>
+
+            <details>
+              <summary><span class="badge">정합성</span> 기기마다 다른 시계를 서버 기준으로 통일</summary>
+              <dl>
+                <dt>문제</dt><dd>기기가 보낸 상태 시작 시각이 각자의 시계 기준이라, 서버에서 합산한 집중·딴짓 시간이 몇 초씩 어긋났습니다.</dd>
+                <dt>해결</dt><dd>heartbeat에 기기 현재 시각을 싣고 <code>서버 수신 시각 − 기기 시각</code>만큼 보정했습니다. 사용자 교정("딴짓 아니야")은 새 분기 없이 기존 구간 자르기 규칙으로 처리했습니다.</dd>
+                <dt>결과</dt><dd>여러 기기의 시간을 서버 한 곳에서 계산하고, 시계 차이·교정 케이스를 API 테스트로 고정했습니다.</dd>
+              </dl>
+            </details>
+
+            <details>
+              <summary><span class="badge">연결</span> 앱이 꺼진 기기를 10초 안에 비활성으로 감지</summary>
+              <dl>
+                <dt>문제</dt><dd>90초 heartbeat로만 생존을 판단해, 앱을 꺼도 다른 기기에는 한동안 연결된 것으로 보였습니다.</dd>
+                <dt>해결</dt><dd>WebSocket 연결을 생존 신호로 쓰고, 연결이 모두 끊긴 뒤 10초 유예가 지나면 비활성을 push했습니다. 유예 안의 재연결은 알리지 않아 순간 끊김에 흔들리지 않습니다.</dd>
+                <dt>결과</dt><dd>실제 WebSocket을 여닫는 통합 테스트로 유예·재연결 시나리오를 검증했습니다.</dd>
+              </dl>
+            </details>
+          </div>
+          <p class="note">팀 운영: 모노레포와 <code>shared/</code> 단일 출처(상태·API 스키마)를 두고 "코드를 바꾸면 같은 PR에서 문서도 고친다"는 규칙을 세워, 3개 클라이언트가 같은 계약으로 개발되게 했습니다. 저장소는 팀 결정으로 비공개입니다.</p>
+        </div>
+      </article>
+
+      <!-- 경희 공간찾기 -->
+      <article class="project" id="space">
+        <header class="project-head">
+          <p class="project-meta">2026.10 – 11 · 5인 팀 · 사용자·관리자 API 담당</p>
+          <h3>경희 공간찾기 <small>모임 조건에 맞는 교내 공간 추천</small></h3>
+          <p class="project-summary">
+            인원·소음·콘센트 조건으로 교내 공간을 찾는 서비스입니다. API 10여 개를 기능·테스트·규칙 문서 순으로 구현했고,
+            운영 서버 부하 테스트에서 <b>목표 60 RPS를 p99 163ms로 통과</b>했습니다.
+          </p>
+          <ul class="tags">
+            <li>Java 21</li><li>Spring Boot 4</li><li>JPA</li><li>PostgreSQL</li><li>Flyway</li><li>AWS</li>
+          </ul>
+        </header>
+
+        <div class="project-body">
+          <div class="problems">
+            <details open>
+              <summary><span class="badge">동시성</span> 비관적 잠금으로 관리자 처리 결과가 지워지는 경합 차단</summary>
+              <dl>
+                <dt>문제</dt><dd>관리자가 재조사 요청을 처리하는 순간 사용자가 같은 요청을 다시 저장하면, 공개된 처리 결과의 연결이 지워질 수 있었습니다. 테스트 케이스를 먼저 쓰다가 발견했습니다.</dd>
+                <dt>해결</dt><dd>대기 요청 조회에 <code>PESSIMISTIC_WRITE</code> 잠금을 걸어 사용자 저장이 처리 완료를 기다리게 했습니다. 처리된 요청은 대기 상태로 조회되지 않으므로 이후 저장은 새 요청이 됩니다.</dd>
+              </dl>
+            </details>
+
+            <details>
+              <summary><span class="badge">정합성</span> 저장 응답과 재조회 응답의 시각 불일치를 4개 API에서 제거</summary>
+              <dl>
+                <dt>원인</dt><dd>Java는 나노초 단위로 시각을 만들지만 PostgreSQL은 마이크로초까지만 저장합니다.</dd>
+                <dt>해결</dt><dd>저장 시각을 <code>truncatedTo(MICROS)</code>로 DB 정밀도에 맞추고, 같은 패턴이 있던 4개 API에 모두 적용했습니다.</dd>
+              </dl>
+            </details>
+          </div>
+        </div>
+      </article>
+
+      <!-- TeamTeam -->
+      <article class="project" id="teamteam">
+        <header class="project-head">
+          <p class="project-meta">2026.05 – 06 · 7인 팀 · 백엔드 주 개발, 중반부터 팀장</p>
+          <h3>TeamTeam <small>대학 팀 프로젝트 협업 플랫폼</small></h3>
+          <p class="project-summary">
+            공지·업무·회의·자료실·채팅을 모은 협업 도구입니다. <b>백엔드 API 10개 영역의 초기 설계와 대부분의 코드(현재 코드의 약 86%)</b>를 작성했고,
+            WebSocket 채팅과 AI 일정 추천(누락 할 일 되묻기 → 담당자 배정 → 일괄 생성)을 구현했습니다.
+          </p>
+          <ul class="tags">
+            <li>Python</li><li>FastAPI</li><li>PostgreSQL (Supabase)</li><li>WebSocket</li><li>AWS ALB · EC2</li>
+          </ul>
+        </header>
+
+        <div class="project-body">
+          <div class="problems">
+            <details open>
+              <summary><span class="badge">운영</span> CORS로 보였던 로그인 500의 실제 원인 찾기</summary>
+              <dl>
+                <dt>원인</dt><dd>Secrets Manager에 잘못 등록된 DB 키였습니다. 증상만 보고 CORS를 의심해 시간을 썼고, 로그로 범위를 좁힌 뒤에야 찾았습니다.</dd>
+                <dt>해결</dt><dd>키를 교체하고 "없는 이메일로 로그인해 500이면 키·DB 문제, 401이면 정상"이라는 판별법을 운영 문서에 남겼습니다.</dd>
+              </dl>
+            </details>
+            <details>
+              <summary><span class="badge">인증</span> 15분마다 강제 로그아웃되던 문제 해결</summary>
+              <dl>
+                <dt>원인</dt><dd>http 프론트와 다른 도메인 API 사이에서 Secure 쿠키가 전송되지 않아 토큰 재발급이 실패했습니다.</dd>
+                <dt>해결</dt><dd>쿠키는 유지한 채 <code>X-Refresh-Token</code> 헤더로도 재발급받을 수 있게 했습니다.</dd>
+              </dl>
+            </details>
+          </div>
+          <p class="links"><a href="https://github.com/pyo-dev03/TeamTeam_backend" target="_blank" rel="noopener">GitHub 저장소 →</a></p>
+        </div>
+      </article>
+
+      <!-- MealService -->
+      <article class="project compact" id="meal">
+        <header class="project-head">
+          <p class="project-meta">2025.09 – 2026.01 · 개인 · 15주</p>
+          <h3>MealService <small>라즈베리파이 홈 서버에서 운영한 식단 관리 서비스</small></h3>
+          <p class="project-summary">
+            Spring Boot로 REST API·화면·예외 처리·단위 테스트를 혼자 구현하고 리눅스 홈 서버에 배포했습니다.
+            배포 오류의 원인이 의존성 없는 19KB <code>plain.jar</code>라는 것을 파일 크기로 찾아 해결했습니다.
+          </p>
+          <ul class="tags">
+            <li>Java 17</li><li>Spring Boot 3.5</li><li>JPA</li><li>MariaDB</li>
+          </ul>
+        </header>
+        <p class="links"><a href="https://github.com/pyo-dev03/mealservices" target="_blank" rel="noopener">GitHub 저장소 →</a></p>
+      </article>
+
+      <div class="others">
+        <h4>그 밖의 작업</h4>
+        <ul>
+          <li><b>로커톤 대상</b> (2026.06) — NFC 스탬프 투어 백엔드. <code>(user_id, shop_id)</code> 유니크 제약으로 중복 적립 방지</li>
+          <li><a href="https://github.com/pyo-dev03/TeoJutDeKam_backend" target="_blank" rel="noopener"><b>터줏대감</b></a> (2026.05) — 위치 기반 방문 인증 API. FastAPI, 비동기 SQLAlchemy</li>
+          <li><a href="https://github.com/pyo-dev03/msa-ecommerce-k8s" target="_blank" rel="noopener"><b>MSA e-Commerce</b></a> (2025.11) — 상품 서비스를 Kubernetes Deployment와 Nginx 게이트웨이로 구성</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section wrap" id="skills">
+      <h2 class="section-title"><span>02</span>기술</h2>
+      <div class="skills">
+        <div>
+          <h4>주력</h4>
+          <p>Java 21 · Spring Boot · Spring Data JPA · PostgreSQL · WebSocket · JUnit</p>
+        </div>
+        <div>
+          <h4>인프라</h4>
+          <p>AWS (EC2, S3, CloudFront, ALB, Secrets Manager) · Docker Compose · GitHub Actions · Flyway</p>
+        </div>
+        <div>
+          <h4>경험</h4>
+          <p>Python FastAPI · Kotlin (Android) · Electron · Kubernetes</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section wrap contact" id="contact">
+      <h2 class="section-title"><span>03</span>연락처</h2>
+      <p>경희대학교 · 2027년 졸업 예정</p>
+      <div class="hero-links">
+        <a class="btn primary" href="mailto:pyo.develop@gmail.com">pyo.develop@gmail.com</a>
+        <a class="btn" href="https://github.com/pyo-dev03" target="_blank" rel="noopener">github.com/pyo-dev03</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer wrap">
+    <p>© 2026 표정수</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
